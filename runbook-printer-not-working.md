@@ -14,11 +14,22 @@
 
 ## Step-by-step fix
 
+> **Local or shared?** Decide first — it changes where you troubleshoot:
+> - **Local printer** (USB or direct-IP on the user's PC): everything below
+>   runs on the workstation. You need **local admin/elevation** for the spooler
+>   service and driver installs.
+> - **Shared printer** (`\\printserver\PrinterName`): the queue lives on the
+>   print server. Client-side steps still apply, but a jammed queue for
+>   multiple users = server-side — escalate instead of repeating client steps.
+
 ### A. Stuck print queue (most common)
-1. Open `services.msc` → find **Print Spooler** → Stop it.
+> **Warning:** clearing the spool folder **permanently deletes all queued
+> jobs** for that printer — warn the user first, especially on shared queues.
+1. Open `services.msc` **as administrator** → find **Print Spooler** → Stop it.
+   (The PowerShell commands below also need an elevated session.)
 2. Delete everything in `C:\Windows\System32\spool\PRINTERS\`
 3. Start the Print Spooler service again.
-4. Have the user reprint. Quick PowerShell version:
+4. Have the user reprint. Quick PowerShell version (elevated):
    ```powershell
    Stop-Service Spooler -Force
    Remove-Item C:\Windows\System32\spool\PRINTERS\* -Force

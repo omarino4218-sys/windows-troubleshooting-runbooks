@@ -16,9 +16,14 @@
 
 ### 1. Find what's hogging resources
 Open Task Manager (`Ctrl + Shift + Esc`) → **Processes** tab, sort by CPU / Memory / Disk:
-- **100% disk** on a spinning HDD → the machine needs an SSD (note it for hardware refresh); short-term, disable Superfetch/SysMain.
+- **100% disk** on a spinning HDD → the machine needs an SSD (note it for hardware refresh). Do NOT disable SysMain/Superfetch as a blanket fix — that's a shot in the dark that can break search indexing and prefetch. Only change services with Task Manager evidence **and** tier-2/manager authorization.
 - One app eating CPU constantly → end it, check if it recurs after reboot.
 - **Startup** tab → disable anything non-essential (Spotify, updaters, chat apps they don't use). This is the highest-ROI 2 minutes in all of helpdesk.
+
+> **Evidence & authorization rule:** before you disable a service, delete files
+> beyond temp/cache locations, or kill processes you don't recognize — have
+> Task Manager data showing the culprit, and get authorization (tier 2 or the
+> user's manager) for anything irreversible. "It might help" is not evidence.
 
 ### 2. Free disk space
 1. Disk Cleanup (`cleanmgr`) — temp files, recycle bin, Windows Update cleanup.
@@ -54,3 +59,8 @@ malware scan — clean / ended runaway process].
 Verification: User confirms noticeably faster at [time].
 Follow-up: [None / recommended SSD/RAM upgrade — specs: ...].
 ```
+
+## Related automation
+
+- [`Clear-TempFiles.ps1`](https://github.com/omarino4218-sys/powershell-helpdesk-toolkit/blob/main/Clear-TempFiles.ps1) — scripted disk cleanup
+- [`Get-SystemInventory.ps1`](https://github.com/omarino4218-sys/powershell-helpdesk-toolkit/blob/main/Get-SystemInventory.ps1) — hardware specs & disk/RAM health flags

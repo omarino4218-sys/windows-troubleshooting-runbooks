@@ -14,10 +14,24 @@
 
 ## Step-by-step fix
 
-### A. "Need password" / auth prompt looping
+> **Which client?** These steps split by app — don't mix them:
+> - **Classic Outlook** (Win32 desktop app): sections A–C below.
+> - **New Outlook** (the Store/web-wrapper app): see section E — it has no
+>   safe mode, no COM add-ins, and no local OST to rebuild; most fixes are
+>   remove/re-add the account or fall back to Outlook on the web.
+> - **Teams**: section D.
+
+### A. "Need password" / auth prompt looping (classic Outlook)
 1. Close Outlook completely (check the system tray — Outlook loves to hide there).
-2. Windows Settings → Accounts → **Access work or school** → select the account → Disconnect, then re-add it.
-3. Reopen Outlook and sign in fresh — this clears the stale token. If MFA is involved, have the phone with the authenticator app ready.
+2. Clear the stale token: Windows Settings → Accounts → **Email & accounts** →
+   select the account → Manage → **Delete** cached credentials for it (or use
+   Credential Manager → Windows Credentials → remove `MicrosoftOffice*` entries).
+3. Reopen Outlook and sign in fresh. If MFA is involved, have the phone with the authenticator app ready.
+4. Only if the loop persists after the above: as a deeper fix, Windows
+   Settings → Accounts → **Access work or school** → select the account →
+   Disconnect, then re-add it. **Caution:** this also drops SSO for other
+   Microsoft apps on the machine — warn the user first, and don't do it on
+   shared/VDI machines without tier-2 approval.
 
 ### B. Stuck on "Trying to connect"
 1. Confirm they're on the right network/VPN — Exchange Online needs internet, on-prem Exchange may need VPN.
@@ -38,6 +52,22 @@ The local OST cache is likely corrupt. Rebuild it:
 1. Sign out of Teams fully (profile pic → Sign out), clear the cache:
    `%appdata%\Microsoft\Teams` → delete contents, restart Teams.
 2. "New Teams" toggle issues: if the user was migrated, make sure they're launching the new client, not the classic one.
+
+### E. New Outlook (not classic)
+1. New Outlook has no safe mode, no COM add-ins, and no repairable local OST —
+   sections B and C above do NOT apply.
+2. Go to Settings (gear) → Accounts → remove the account, then re-add it.
+3. Still broken? Verify in Outlook on the web (`outlook.office.com`): works
+   there = local client issue (reinstall the app); broken there = mailbox/
+   account issue — escalate per the criteria below.
+
+## Prerequisites & boundaries
+
+- You need the user's cooperation for re-auth (their MFA device must be handy).
+- Do NOT disconnect work/school accounts, rebuild OSTs, or clear caches on
+  shared machines, VDI sessions, or executive devices without tier-2 approval.
+- If the mailbox works in Outlook on the web, the problem is the local client —
+  stop before touching anything server-side.
 
 ## Escalate when
 

@@ -19,6 +19,11 @@
 
 ## Step-by-step fix
 
+> **Identity verification first — every time.** Before ANY unlock or reset
+> below: verify you are talking to the actual account owner. Call them back
+> at their known number on file, or check employee ID + manager confirmation
+> per your org's policy. Never reset on the caller's word alone.
+
 ### A. Account is locked out
 ```powershell
 # Unlock the account
@@ -33,8 +38,9 @@ or a mapped drive. Ask the user to update the password on their phone too.
 
 ### B. Password reset (forgotten or expired)
 ```powershell
-# Reset and force change at next logon
-Set-ADAccountPassword -Identity jdoe -Reset -NewPassword (ConvertTo-SecureString "Temp#2026!" -AsPlainText -Force)
+# Prompt securely — never hardcode a temporary password
+$tempPw = Read-Host "Enter temporary password" -AsSecureString
+Set-ADAccountPassword -Identity jdoe -Reset -NewPassword $tempPw
 Set-ADUser jdoe -ChangePasswordAtLogon $true
 ```
 Give the user the temp password over a verified channel (call them back at their
@@ -72,3 +78,8 @@ connect VPN and log in with new password].
 Verification: User logged in successfully at [time].
 Follow-up: Advised user to update saved password on mobile devices.
 ```
+
+## Related automation
+
+- [`Reset-HDPassword.ps1`](https://github.com/omarino4218-sys/powershell-helpdesk-toolkit/blob/main/Reset-HDPassword.ps1) — one-shot password reset + unlock
+- [`New-HDUser.ps1`](https://github.com/omarino4218-sys/powershell-helpdesk-toolkit/blob/main/New-HDUser.ps1) — bulk account provisioning

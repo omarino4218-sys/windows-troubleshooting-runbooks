@@ -24,10 +24,19 @@ ipconfig
 
 ### 2. Test the layers with ping
 ```cmd
-ping <default-gateway>      :: from the ipconfig output above
-ping 8.8.8.8                :: tests internet routing, bypasses DNS
-ping google.com             :: tests DNS resolution
+ping <default-gateway>
+ping 8.8.8.8
+ping google.com
 ```
+- Get the default gateway from the `ipconfig` output in step 1. The 8.8.8.8
+  ping tests internet routing while bypassing DNS; the google.com ping tests
+  DNS resolution.
+- **A failed ping is inconclusive, not a diagnosis.** ICMP is commonly
+  filtered by host and network firewalls — a failed ping with otherwise
+  working traffic just means ping is blocked. Confirm with a TCP test instead:
+  ```powershell
+  Test-NetConnection google.com -Port 443
+  ```
 - Gateway fails → local network problem (cable, switch port, Wi-Fi AP).
 - Gateway OK, 8.8.8.8 fails → routing/firewall issue past the local network.
 - 8.8.8.8 OK, google.com fails → **DNS issue** (most common "connected but no internet"):
@@ -37,6 +46,9 @@ ping google.com             :: tests DNS resolution
   Then try again. If it persists, check what DNS servers are assigned (`ipconfig /all`) — they should be your internal DNS or a known public one.
 
 ### 3. Renew the DHCP lease
+> **Warning:** `ipconfig /release` drops the machine's IP immediately. Over a
+> remote session (RDP/Quick Assist) you will lose the session the moment you
+> run it — only do this with the user on the phone or with another way back in.
 ```cmd
 ipconfig /release
 ipconfig /renew
@@ -45,6 +57,9 @@ If renew fails or times out, the DHCP server isn't reachable — verify the mach
 is on the right VLAN/network and the DHCP scope isn't exhausted (escalate to netops).
 
 ### 4. Driver / adapter issues
+> **Warning:** disabling the network adapter drops the connection instantly.
+> Over a remote session, have the user (or a back-channel) ready to re-enable
+> it — otherwise you lock yourself out.
 1. Device Manager → Network adapters → look for yellow warnings.
 2. Right-click → Disable, wait 5 seconds → Enable.
 3. Still broken? Right-click → Uninstall device (check "delete driver" only if you
@@ -79,3 +94,7 @@ Actions: [flushdns / renew / driver reinstall / rejoined Wi-Fi / netsh reset + r
 Verification: User browsing and email confirmed working at [time].
 Follow-up: [None / monitoring — second occurrence this week].
 ```
+
+## Related automation
+
+- [`Test-NetworkConnectivity.ps1`](https://github.com/omarino4218-sys/powershell-helpdesk-toolkit/blob/main/Test-NetworkConnectivity.ps1) — layered gateway/DNS/internet/TCP check
