@@ -8,7 +8,7 @@
 
 ## Quick checks (do these first)
 
-1. **Is it just email or all internet?** — If nothing loads, use the [no-internet runbook](no-internet.md) instead.
+1. **Is it just email or all internet?** — If nothing loads, use the [no-internet runbook](runbook-no-internet.md) instead.
 2. **Check the Outlook status bar** (bottom-right): "Connected to Microsoft Exchange" = healthy. "Disconnected", "Trying to connect", or "Need password" tells you where to look.
 3. **Ask about password changes** — a recent password change breaks Outlook/Teams auth silently until re-authenticated.
 
